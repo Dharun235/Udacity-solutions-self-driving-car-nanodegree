@@ -61,7 +61,33 @@ def load_configs_model(model_name='darknet', configs=None):
         ####### ID_S3_EX1-3 START #######     
         #######
         print("student task ID_S3_EX1-3")
+        configs.model_path = os.path.join(parent_path, 'tools', 'objdet_models', 'resnet')
+        configs.pretrained_filename = os.path.join(configs.model_path, 'pretrained', 'fpn_resnet_18_epoch_300.pth')
+        configs.arch = 'fpn_resnet'
+        configs.batch_size = 1
+        configs.pin_memory = True
+        configs.distributed = False  # For testing on 1 GPU only
+        configs.input_size = (608, 608)
+        configs.hm_size = (152, 152)
+        configs.down_ratio = 4
+        configs.max_objects = 50
 
+        configs.imagenet_pretrained = False
+        configs.head_conv = 64
+        configs.num_classes = 3
+        configs.num_center_offset = 2
+        configs.num_z = 1
+        configs.num_dim = 3
+        configs.num_direction = 2  # sin, cos
+
+        configs.heads = {
+            'hm_cen': configs.num_classes,
+            'cen_offset': configs.num_center_offset,
+            'direction': configs.num_direction,
+            'z_coor': configs.num_z,
+            'dim': configs.num_dim
+        }
+        configs.num_input_features = 4
         #######
         ####### ID_S3_EX1-3 END #######     
 
@@ -118,7 +144,8 @@ def create_model(configs):
         ####### ID_S3_EX1-4 START #######     
         #######
         print("student task ID_S3_EX1-4")
-
+        model = fpn_resnet.get_pose_net(18, configs.heads, configs.head_conv, configs.imagenet_pretrained)
+        
         #######
         ####### ID_S3_EX1-4 END #######     
     
@@ -167,7 +194,15 @@ def detect_objects(input_bev_maps, model, configs):
             ####### ID_S3_EX1-5 START #######     
             #######
             print("student task ID_S3_EX1-5")
-
+        detections = []
+        for sample_i in range(len(outputs)):
+            output = outputs[sample_i]
+            # Decode the output
+            decoded_detections = decode(output, conf_thresh=configs.conf_thresh)
+            # Perform post-processing
+            post_processed_detections = post_processing(decoded_detections, nms_thresh=configs.nms_thresh)
+            # Append the processed detections to the detections list
+            detections.append(post_processed_detections)
             #######
             ####### ID_S3_EX1-5 END #######     
 
@@ -180,14 +215,23 @@ def detect_objects(input_bev_maps, model, configs):
     objects = [] 
 
     ## step 1 : check whether there are any detections
-
+    if detections:
         ## step 2 : loop over all detections
-        
+        for detection in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-        
+            x, y, z, l, w, h, yaw = detection
+            x_world = x * (configs.lim_x[1] - configs.lim_x[0]) + configs.lim_x[0]
+            y_world = y * (configs.lim_y[1] - configs.lim_y[0]) + configs.lim_y[0]
+            z_world = z * (configs.lim_z[1] - configs.lim_z[0]) + configs.lim_z[0]
+            l_world = l * (configs.lim_x[1] - configs.lim_x[0])
+            w_world = w * (configs.lim_y[1] - configs.lim_y[0])
+            h_world = h * (configs.lim_z[1] - configs.lim_z[0])
+
             ## step 4 : append the current object to the 'objects' array
-        
+            objects.append([x_world, y_world, z_world, l_world, w_world, h_world, yaw])
+
     #######
-    ####### ID_S3_EX2 START #######   
+    ####### ID_S3_EX2 END #######   
     
     return objects    
+
