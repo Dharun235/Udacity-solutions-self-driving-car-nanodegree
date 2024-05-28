@@ -79,24 +79,39 @@ def show_range_image(frame, lidar_name):
     # step 4 : map the range channel onto an 8-bit scale and make sure that the full range of values is appropriately considered
     ri_range = ri_range * 255 / (np.amax(ri_range) - np.amin(ri_range))
     img_range = ri_range.astype(np.uint8)
-    # step 5 : map the intensity channel onto an 8-bit scale and normalize with the difference between the 1- and 99-percentile to mitigate the influence of outliers
-    ri_intensity = np.amax(ri_intensity)/2  *ri_intensity*  255 / (np.amax(ri_intensity) - np.amin(ri_intensity)) 
-    img_intensity = ri_intensity.astype(np.uint8)
-    # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
-    stacked_image = np.vstack((img_range, img_intensity))
-    stacked_image_uint8 = stacked_image.astype(np.uint8)
-    img_range_intensity = stacked_image_uint8 
-    # Step 7: Crop the image to +/- 90 degrees
-    img_width = img_range_intensity.shape[1]
+    # Determine the columns corresponding to +/- 90 degrees
+    img_width = ri.shape[1]
     center_column = img_width // 2
     degree_90_column_range = img_width // 4
+
+    # Calculate start and end columns for the +/- 90 degree range
     start_column = center_column - degree_90_column_range
     end_column = center_column + degree_90_column_range
-    cropped_img_range_intensity = img_range_intensity[:, start_column:end_column]
+
+    # Crop the range image
+    cropped_ri_range = ri_range[:, start_column:end_column]
+    cropped_ri_intensity = ri_intensity[:, start_column:end_column]
+
+    # Step 5: Map the range channel onto an 8-bit scale
+    cropped_ri_range = cropped_ri_range * 255 / (np.amax(cropped_ri_range) - np.amin(cropped_ri_range))
+    img_range = cropped_ri_range.astype(np.uint8)
+
+    # Step 6: Map the intensity channel onto an 8-bit scale and normalize it
+    cropped_ri_intensity = np.amax(cropped_ri_intensity) / 2 * cropped_ri_intensity * 255 / (np.amax(cropped_ri_intensity) - np.amin(cropped_ri_intensity))
+    img_intensity = cropped_ri_intensity.astype(np.uint8)
+
+    # Step 7: Stack the range and intensity images vertically
+    stacked_image = np.vstack((img_range, img_intensity))
+    stacked_image_uint8 = stacked_image.astype(np.uint8)
+
+    # The final image
+    img_range_intensity = stacked_image_uint8
+ 
+    # remove after implementing all steps
     #######
     ####### ID_S1_EX1 END #######     
     
-    return cropped_img_range_intensity
+    return img_range_intensity
 
 
 # create birds-eye view of lidar data
@@ -249,5 +264,4 @@ def bev_from_pcl(lidar_pcl, configs):
     bev_maps = torch.from_numpy(bev_maps)  # create tensor from birds-eye view
     input_bev_maps = bev_maps.to(configs.device, non_blocking=True).float()
     return input_bev_maps
-
 
