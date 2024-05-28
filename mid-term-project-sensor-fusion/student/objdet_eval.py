@@ -13,7 +13,7 @@
 # general package imports
 import numpy as np
 import matplotlib
-matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well     
+#matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well     
 import matplotlib.pyplot as plt
 
 import torch
@@ -46,44 +46,52 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
 
             ####### ID_S4_EX1 START #######     
             #######
-            print("student task ID_S4_EX1 ")
-
             ## step 1 : extract the four corners of the current label bounding-box
+            xmin_lab, ymin_lab, zmin_lab, xmax_lab, ymax_lab, zmax_lab = tools.compute_box_corners(label.box)
+            
             
             ## step 2 : loop over all detected objects
-
+            for detection in detections:
                 ## step 3 : extract the four corners of the current detection
+                xmin_det, ymin_det, zmin_det, xmax_det, ymax_det, zmax_det = tools.compute_box_corners(detection.box)
                 
                 ## step 4 : computer the center distance between label and detection bounding-box in x, y, and z
+                center_dev_x = (xmin_lab + xmax_lab - xmin_det - xmax_det) / 2
+                center_dev_y = (ymin_lab + ymax_lab - ymin_det - ymax_det) / 2
+                center_dev_z = (zmin_lab + zmax_lab - zmin_det - zmax_det) / 2
                 
                 ## step 5 : compute the intersection over union (IOU) between label and detection bounding-box
+                inter_box = [max(xmin_lab, xmin_det), max(ymin_lab, ymin_det), max(zmin_lab, zmin_det),
+                             min(xmax_lab, xmax_det), min(ymax_lab, ymax_det), min(zmax_lab, zmax_det)]
+                inter_vol = max(0, inter_box[3] - inter_box[0]) * max(0, inter_box[4] - inter_box[1]) * max(0, inter_box[5] - inter_box[2])
+                union_vol = (xmax_lab - xmin_lab) * (ymax_lab - ymin_lab) * (zmax_lab - zmin_lab) + (xmax_det - xmin_det) * (ymax_det - ymin_det) * (zmax_det - zmin_det) - inter_vol
+                iou = inter_vol / union_vol if union_vol != 0 else 0
                 
                 ## step 6 : if IOU exceeds min_iou threshold, store [iou,dist_x, dist_y, dist_z] in matches_lab_det and increase the TP count
-                
+                if iou > min_iou:
+                    matches_lab_det.append([iou, center_dev_x, center_dev_y, center_dev_z])
+                    true_positives += 1
             #######
             ####### ID_S4_EX1 END #######     
             
         # find best match and compute metrics
         if matches_lab_det:
-            best_match = max(matches_lab_det,key=itemgetter(1)) # retrieve entry with max iou in case of multiple candidates   
+            best_match = max(matches_lab_det, key=itemgetter(1)) # retrieve entry with max iou in case of multiple candidates   
             ious.append(best_match[0])
             center_devs.append(best_match[1:])
-
-
+    
     ####### ID_S4_EX2 START #######     
     #######
-    print("student task ID_S4_EX2")
-    
     # compute positives and negatives for precision/recall
     
     ## step 1 : compute the total number of positives present in the scene
-    all_positives = 0
+    all_positives = sum(labels_valid)
 
     ## step 2 : compute the number of false negatives
-    false_negatives = 0
+    false_negatives = all_positives - true_positives
 
     ## step 3 : compute the number of false positives
-    false_positives = 0
+    false_positives = len(detections) - true_positives
     
     #######
     ####### ID_S4_EX2 END #######     
@@ -92,7 +100,6 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
     det_performance = [ious, center_devs, pos_negs]
     
     return det_performance
-
 
 # evaluate object detection performance based on all frames
 def compute_performance_stats(det_performance_all):
@@ -111,12 +118,18 @@ def compute_performance_stats(det_performance_all):
     print('student task ID_S4_EX3')
 
     ## step 1 : extract the total number of positives, true positives, false negatives and false positives
-    
+    all_positives = sum([item[0] for item in pos_negs])
+    true_positives = sum([item[1] for item in pos_negs])
+    false_negatives = sum([item[2] for item in pos_negs])
+    false_positives = sum([item[3] for item in pos_negs])
+
     ## step 2 : compute precision
-    precision = 0.0
+    precision = true_positives / (true_positives + false_positives) if true_positives + false_positives != 0 else 0.0
+
 
     ## step 3 : compute recall 
-    recall = 0.0
+    recall = true_positives / (true_positives + false_negatives) if true_positives + false_negatives != 0 else 0.0
+
 
     #######    
     ####### ID_S4_EX3 END #######     
