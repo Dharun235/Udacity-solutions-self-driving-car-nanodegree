@@ -85,11 +85,18 @@ def show_range_image(frame, lidar_name):
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
     stacked_image = np.vstack((img_range, img_intensity))
     stacked_image_uint8 = stacked_image.astype(np.uint8)
-    img_range_intensity = stacked_image_uint8 # remove after implementing all steps
+    img_range_intensity = stacked_image_uint8 
+    # Step 7: Crop the image to +/- 90 degrees
+    img_width = img_range_intensity.shape[1]
+    center_column = img_width // 2
+    degree_90_column_range = img_width // 4
+    start_column = center_column - degree_90_column_range
+    end_column = center_column + degree_90_column_range
+    cropped_img_range_intensity = img_range_intensity[:, start_column:end_column]
     #######
     ####### ID_S1_EX1 END #######     
     
-    return img_range_intensity
+    return cropped_img_range_intensity
 
 
 # create birds-eye view of lidar data
