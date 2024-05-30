@@ -9,10 +9,9 @@
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
 # ----------------------------------------------------------------------
 #
-
 # imports
 import numpy as np
-
+import math
 # add project directory to python path to enable relative imports
 import os
 import sys
@@ -20,7 +19,6 @@ PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 import misc.params as params 
-
 class Sensor:
     '''Sensor class including measurement matrix'''
     def __init__(self, name, calib):
@@ -46,12 +44,22 @@ class Sensor:
         ############
         # TODO Step 4: implement a function that returns True if x lies in the sensor's field of view, 
         # otherwise False.
-        # Transform x from vehicle coordinates to sensor coordinates
-        x_sensor = self.sens_to_veh.I @ np.vstack((x[:3], 1))
-        
-        # Check if the transformed state vector lies within the field of view
-        return self.fov[0] <= x_sensor[0] <= self.fov[1]
         ############
+        # check if an object x can be seen by this sensor
+        pos_veh = np.ones((4, 1)) # homogeneous coordinates
+        pos_veh[0:3] = x[0:3] 
+        pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to sensor coordinates
+        visible = False
+        x,y,z = np.squeeze(pos_sens.A)[:3]
+        # make sure to not divide by zero - we can exclude the whole negative x-range here
+            
+        alpha = math.atan2(y, x)
+        if alpha >= self.fov[0] and alpha <= self.fov[1]:
+                visible = True
+                
+        # no normalization needed because returned alpha always lies between [-pi/2, pi/2]
+            
+        return visible
         
         ############
         # END student code
@@ -68,17 +76,29 @@ class Sensor:
             
             ############
             # TODO Step 4: implement nonlinear camera measurement function h:
-            
-            ############
             # - transform position estimate from vehicle to camera coordinates
-            x_cam = self.veh_to_sens.I @ np.vstack((x[:3], 1))
             # - project from camera to image coordinates
             # - make sure to not divide by zero, raise an error if needed
-            i = self.f_i * (x_cam[0] / x_cam[2]) + self.c_i
-            j = self.f_j * (x_cam[1] / x_cam[2]) + self.c_j
             # - return h(x)
-            return np.array([i, j])
-                 
+            ############
+            # transform from vehicle to lidar coordinates
+            pos_veh = np.ones((4, 1)) # homogeneous coordinates
+            pos_veh[0:3] = x[0:3] 
+            
+            pos_sens = self.veh_to_sens*pos_veh 
+            x, y, z = pos_sens[0:3]
+            # - project from camera to image coordinates
+            if x <= 0:
+                h_x = np.array([-100, -100])
+            else:   
+                u = self.c_i - self.f_i * y/x
+                v = self.c_j - self.f_j * z/x
+                h_x = np.array([u, v])
+                
+            h_x = np.matrix(h_x.reshape(-1, 1))
+            return h_x
+            
+        
             ############
             # END student code
             ############ 
@@ -120,8 +140,10 @@ class Sensor:
         ############
         # TODO Step 4: remove restriction to lidar in order to include camera as well
         ############
+        
+        #if self.name == 'lidar':
         meas = Measurement(num_frame, z, self)
-        meas_list.append(meas)        
+        meas_list.append(meas)
         return meas_list
         
         ############
@@ -158,13 +180,14 @@ class Measurement:
             ############
             # TODO Step 4: initialize camera measurement including z, R, and sensor 
             ############
-            self.z = np.zeros((sensor.dim_meas, 1))  # measurement vector
+            self.z = np.zeros((sensor.dim_meas,1))
+            self.sensor = sensor # sensor that generated this measurement
+            
             self.z[0][0] = z[0]
             self.z[1][0] = z[1]
-            sigma_cam_i = params.sigma_cam_i
-            sigma_cam_j = params.sigma_cam_j
-            self.R = np.matrix([[sigma_cam_i ** 2, 0], [0, sigma_cam_j ** 2]])
-            self.sensor = sensor
+            self.R = np.matrix([[params.sigma_cam_i**2, 0], 
+                                [0,params.sigma_cam_j**2]])
+            
         
             ############
             # END student code
