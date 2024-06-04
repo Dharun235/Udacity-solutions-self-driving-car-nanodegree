@@ -28,7 +28,7 @@ a. transform position estimate from vehicle to camera coordinates,
 b. project from camera to image coordinates,
 c. make sure to not divide by zero, raise an error if needed and then return h(x).
 - Given access for camera and initialized camera measurements like z, R and sensor object.
-- 
+  
 #### Results
 
 RMSE plots and Tracking video
