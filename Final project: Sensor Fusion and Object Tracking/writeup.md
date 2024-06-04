@@ -31,6 +31,8 @@ c. make sure to not divide by zero, raise an error if needed and then return h(x
 - 
 #### Results
 
+RMSE plots and Tracking video
+
 RMSE STEP 1: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-driving-car-nanodegree/blob/main/Final%20project%3A%20Sensor%20Fusion%20and%20Object%20Tracking/rmse_step1_after_4.png)
 
 RMSE STEP 2: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-driving-car-nanodegree/blob/main/Final%20project%3A%20Sensor%20Fusion%20and%20Object%20Tracking/rmse_step2_after_4.png)
@@ -39,7 +41,9 @@ RMSE STEP 3: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-dr
 
 RMSE STEP 4: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-driving-car-nanodegree/blob/main/Final%20project%3A%20Sensor%20Fusion%20and%20Object%20Tracking/rmse_step4.png)
 
-Tracking video step 4- ![Tracking video](https://drive.google.com/file/d/1eqh4bciqW5nrZfCIAIQQAclwYd--OJ52/view?usp=sharing)
+Tracking video step 4 is available in this google drive link - https://drive.google.com/file/d/1eqh4bciqW5nrZfCIAIQQAclwYd--OJ52/view?usp=sharing
+
+Inference:
 From the results it is evident that mean RMSE is lesser than 0.25 for all the steps and the rmse plot for step 3 and the tracking video shows no confirmed ghost tracks or track losses occured. Two of the tracks are tracked from beginning to end of the sequence (0s - 200s) without track loss. 
 
 Completing the track management was difficult because I couldn't figure out how much to reduce the track score, otherwise it was easier to do the project.
