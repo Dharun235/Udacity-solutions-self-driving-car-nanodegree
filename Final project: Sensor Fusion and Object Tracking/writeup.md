@@ -39,6 +39,8 @@ RMSE STEP 2: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-dr
 
 RMSE STEP 3: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-driving-car-nanodegree/blob/main/Final%20project%3A%20Sensor%20Fusion%20and%20Object%20Tracking/rmse_step3.png)
 
+RMSE STEP 4: ![RMSE plot](https://github.com/Dharun235/Udacity-solutions-self-driving-car-nanodegree/blob/main/Final%20project%3A%20Sensor%20Fusion%20and%20Object%20Tracking/rmse_step4.png)
+
 Tracking video step 4 is available in this google drive link - [Tracking video](https://drive.google.com/file/d/1KP0B5zo8-r7LBNPX6fhQCsa5NSQD7oe4/view?usp=sharing)
 
 Inference:
