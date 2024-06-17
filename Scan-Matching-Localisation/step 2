@@ -1,0 +1,16 @@
+Pose performNDT(PointCloudT::Ptr targetCloud, PointCloudT::Ptr sourceCloud) {
+    pcl::NormalDistributionsTransform<PointT, PointT> ndt;
+    ndt.setTransformationEpsilon(0.01);
+    ndt.setStepSize(0.1);
+    ndt.setResolution(1.0);
+    ndt.setMaximumIterations(35);
+    ndt.setInputSource(sourceCloud);
+    ndt.setInputTarget(targetCloud);
+
+    PointCloudT::Ptr outputCloud(new PointCloudT);
+    Eigen::Matrix4f initialGuess = Eigen::Matrix4f::Identity();
+    ndt.align(*outputCloud, initialGuess);
+
+    Eigen::Matrix4f transformation = ndt.getFinalTransformation();
+    return getPose(transformation);
+}
