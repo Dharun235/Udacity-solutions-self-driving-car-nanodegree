@@ -1,0 +1,34 @@
+    // Find pose transform by using ICP or NDT matching
+    pose = performNDT(mapCloud, cloudFiltered);
+
+    // Transform scan so it aligns with ego's actual pose and render that scan
+    pcl::transformPointCloud(*cloudFiltered, *scanCloud, pose.transform);
+    viewer->removePointCloud("scan");
+    renderPointCloud(viewer, scanCloud, "scan", Color(1, 0, 0));
+
+    viewer->removeAllShapes();
+    drawCar(pose, 1, Color(0, 1, 0), 0.35, viewer);
+
+    double poseError = sqrt((truePose.position.x - pose.position.x) * (truePose.position.x - pose.position.x) +
+                            (truePose.position.y - pose.position.y) * (truePose.position.y - pose.position.y));
+    if (poseError > maxError)
+        maxError = poseError;
+    double distDriven = sqrt((truePose.position.x) * (truePose.position.x) + (truePose.position.y) * (truePose.position.y));
+    viewer->removeShape("maxE");
+    viewer->addText("Max Error: " + to_string(maxError) + " m", 200, 100, 32, 1.0, 1.0, 1.0, "maxE", 0);
+    viewer->removeShape("derror");
+    viewer->addText("Pose error: " + to_string(poseError) + " m", 200, 150, 32, 1.0, 1.0, 1.0, "derror", 0);
+    viewer->removeShape("dist");
+    viewer->addText("Distance: " + to_string(distDriven) + " m", 200, 200, 32, 1.0, 1.0, 1.0, "dist", 0);
+
+    if (maxError > 1.2 || distDriven >= 170.0) {
+        viewer->removeShape("eval");
+        if (maxError > 1.2) {
+            viewer->addText("Try Again", 200, 50, 32, 1.0, 0.0, 0.0, "eval", 0);
+        } else {
+            viewer->addText("Passed!", 200, 50, 32, 0.0, 1.0, 0.0, "eval", 0);
+        }
+    }
+
+    pclCloud.points.clear();
+}
