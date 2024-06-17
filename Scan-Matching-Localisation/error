@@ -1,0 +1,40 @@
+~/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project$ make
+Scanning dependencies of target cloud_loc
+[ 33%] Building CXX object CMakeFiles/cloud_loc.dir/c3-main.cpp.o
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp: In function ‘int main()’:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp:214:71: error: ‘struct Pose’ has no member named ‘getTransformationMatrix’
+  214 |             pcl::transformPointCloud(*cloudFiltered, *scanCloud, pose.getTransformationMatrix());
+      |                                                                       ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/tuple.hpp:28,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/policies/relate/tupled.hpp:15,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/strategies/intersection_strategies.hpp:22,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/strategies/strategies.hpp:39,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/geometry.hpp:49,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry.hpp:17,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/geom/Rtree.h:11,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/road/Map.h:10,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/client/Map.h:13,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp:4:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp: In instantiation of ‘boost::tuples::cons<HT, TT>::cons(typename boost::tuples::access_traits<typename boost::tuples::detail::wrap_non_storeable_type<HT>::type>::parameter_type, const tail_type&) [with HT = boost::geometry::de9im::mask; TT = boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>; typename boost::tuples::access_traits<typename boost::tuples::detail::wrap_non_storeable_type<HT>::type>::parameter_type = const boost::geometry::de9im::mask&; boost::tuples::cons<HT, TT>::tail_type = boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>]’:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/algorithms/detail/relate/de9im.hpp:200:66:   required from here
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp:294:23: warning: implicitly-declared ‘constexpr boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>::cons(const boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>&)’ is deprecated [-Wdeprecated-copy]
+  294 |     : head (h), tail(t) {}
+      |                       ^
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp:400:9: note: because ‘boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>’ has user-provided ‘boost::tuples::cons<HT, boost::tuples::null_type>& boost::tuples::cons<HT, boost::tuples::null_type>::operator=(const boost::tuples::cons<HT, boost::tuples::null_type>&) [with HT = boost::geometry::de9im::mask]’
+  400 |   cons& operator=(const cons& u) { head = u.head; return *this; }
+      |         ^~~~~~~~
+In file included from /usr/include/eigen3/Eigen/Core:366,
+                 from /usr/include/pcl-1.10/pcl/pcl_macros.h:75,
+                 from /usr/include/pcl-1.10/pcl/io/pcd_io.h:42,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp:14:
+/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h: In instantiation of ‘void Eigen::internal::call_assignment_no_alias(Dst&, const Src&, const Func&) [with Dst = Eigen::Matrix<double, 4, 4>; Src = Eigen::Matrix<float, 4, 4>; Func = Eigen::internal::assign_op<double, float>]’:
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:732:41:   required from ‘Derived& Eigen::PlainObjectBase<Derived>::_set_noalias(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 4, 4>; Derived = Eigen::Matrix<double, 4, 4>]’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:537:7:   required from ‘Eigen::PlainObjectBase<Derived>::PlainObjectBase(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 4, 4>; Derived = Eigen::Matrix<double, 4, 4>]’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:377:29:   required from ‘Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>::Matrix(const Eigen::EigenBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 4, 4>; _Scalar = double; int _Rows = 4; int _Cols = 4; int _Options = 0; int _MaxRows = 4; int _MaxCols = 4]’
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp:98:46:   required from here
+/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:834:3: error: static assertion failed: YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY
+  834 |   EIGEN_CHECK_BINARY_COMPATIBILIY(Func,typename ActualDstTypeCleaned::Scalar,typename Src::Scalar);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [CMakeFiles/cloud_loc.dir/build.make:63: CMakeFiles/cloud_loc.dir/c3-main.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:76: CMakeFiles/cloud_loc.dir/all] Error 2
+make: *** [Makefile:84: all] Error 2
