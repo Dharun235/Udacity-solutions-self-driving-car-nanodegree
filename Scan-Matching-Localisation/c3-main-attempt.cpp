@@ -15,6 +15,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/registration/icp.h>
+#include <pcl/registration/ndt.h>
 #include <pcl/console/time.h>   // TicToc
 #include "helper.h"
 #include <sstream>
@@ -100,6 +101,23 @@ Pose performICP(PointCloudT::Ptr target, PointCloudT::Ptr source) {
     return pose;
 }
 
+Pose performNDT(PointCloudT::Ptr target, PointCloudT::Ptr source) {
+    // Create the NDT object
+    pcl::NormalDistributionsTransform<PointT, PointT> ndt;
+    ndt.setMaximumIterations(50);
+    ndt.setResolution(1.0);
+    ndt.setInputSource(source);
+    ndt.setInputTarget(target);
+
+    PointCloudT::Ptr cloud_aligned(new PointCloudT);
+    ndt.align(*cloud_aligned);
+
+    Eigen::Matrix4f transformation_matrix = ndt.getFinalTransformation();
+    Pose pose = getPose(transformation_matrix);
+
+    return pose;
+}
+
 int main() {
     auto client = cc::Client("localhost", 2000);
     client.SetTimeout(2s);
@@ -163,87 +181,36 @@ int main() {
 
     Pose poseRef(Point(vehicle->GetTransform().location.x, vehicle->GetTransform().location.y, vehicle->GetTransform().location.z),
                  Rotate(vehicle->GetTransform().rotation.yaw * pi / 180, vehicle->GetTransform().rotation.pitch * pi / 180, vehicle->GetTransform().rotation.roll * pi / 180));
-    double maxError = 0;
+    
+    drawCar(poseRef, 0, Color(1, 0, 0), 0.7, viewer);
 
     while (!viewer->wasStopped()) {
-        while (new_scan) {
-            std::this_thread::sleep_for(0.1s);
-            world.Tick(1s);
+        while (!new_scan) {
+            new_scan = true;
+
+            // Step 1: Filter the point cloud using a voxel grid filter
+            pcl::VoxelGrid<PointT> voxelGrid;
+            voxelGrid.setInputCloud(scanCloud);
+            voxelGrid.setLeafSize(0.5f, 0.5f, 0.5f); // Set voxel size here
+            voxelGrid.filter(*cloudFiltered);
+
+            // Step 2: Perform pose estimation using ICP or NDT
+            Pose estimatedPose = performICP(mapCloud, cloudFiltered); // or use performNDT for NDT
+
+            // Step 3: Transform the scan cloud
+            pcl::transformPointCloud(*cloudFiltered, *scanCloud, estimatedPose.getTransformationMatrix());
+
+            viewer->removeAllShapes();
+            drawCar(estimatedPose, 1, Color(0, 1, 0), 0.35, viewer);
+            viewer->spinOnce();
         }
+
         if (refresh_view) {
-            viewer->setCameraPosition(pose.position.x, pose.position.y, 60, pose.position.x + 1, pose.position.y + 1, 0, 0, 0, 1);
             refresh_view = false;
-        }
-        
-        viewer->removeShape("box0");
-        viewer->removeShape("boxFill0");
-        Pose truePose = Pose(Point(vehicle->GetTransform().location.x, vehicle->GetTransform().location.y, vehicle->GetTransform().location.z),
-                             Rotate(vehicle->GetTransform().rotation.yaw * pi / 180, vehicle->GetTransform().rotation.pitch * pi / 180, vehicle->GetTransform().rotation.roll * pi / 180)) - poseRef;
-        drawCar(truePose, 0, Color(1, 0, 0), 0.7, viewer);
-        double theta = truePose.rotation.yaw;
-        double stheta = control.steer * pi / 4 + theta;
-        viewer->removeShape("steer");
-        renderRay(viewer, Point(truePose.position.x + 2 * cos(theta), truePose.position.y + 2 * sin(theta), truePose.position.z),
-                  Point(truePose.position.x + 4 * cos(stheta), truePose.position.y + 4 * sin(stheta), truePose.position.z), "steer", Color(0, 1, 0));
-
-        ControlState accuate(0, 0, 1);
-        if (cs.size() > 0) {
-            accuate = cs.back();
-            cs.clear();
-
-            Accuate(accuate, control);
-            vehicle->ApplyControl(control);
+            viewer->removeAllShapes();
+            drawCar(poseRef, 0, Color(1, 0, 0), 0.7, viewer);
         }
 
         viewer->spinOnce();
-        
-        if (!new_scan) {
-            new_scan = true;
-            
-            // Step 1: Filter scan using voxel filter
-            pcl::VoxelGrid<PointT> vg;
-            vg.setInputCloud(scanCloud);
-            double filterRes = 0.5;
-            vg.setLeafSize(filterRes, filterRes, filterRes);
-            vg.filter(*cloudFiltered);
-            
-            // Step 2: Find pose transform by using ICP
-            pose = performICP(mapCloud, cloudFiltered);
-            
-            // Step 3: Transform the scan so it aligns with ego's actual pose
-            pcl::transformPointCloud(*cloudFiltered, *scanCloud, pose.getTransformationMatrix());
-            
-            // Render transformed scan
-            viewer->removePointCloud("scan");
-            renderPointCloud(viewer, scanCloud, "scan", Color(1, 0, 0));
-            
-            viewer->removeAllShapes();
-            drawCar(pose, 1, Color(0, 1, 0), 0.35, viewer);
-            
-            double poseError = sqrt((truePose.position.x - pose.position.x) * (truePose.position.x - pose.position.x) +
-                                    (truePose.position.y - pose.position.y) * (truePose.position.y - pose.position.y));
-            if (poseError > maxError)
-                maxError = poseError;
-            double distDriven = sqrt((truePose.position.x) * (truePose.position.x) + (truePose.position.y) * (truePose.position.y));
-            
-            viewer->removeShape("maxE");
-            viewer->addText("Max Error: " + to_string(maxError) + " m", 200, 100, 32, 1.0, 1.0, 1.0, "maxE", 0);
-            viewer->removeShape("derror");
-            viewer->addText("Pose error: " + to_string(poseError) + " m", 200, 150, 32, 1.0, 1.0, 1.0, "derror", 0);
-            viewer->removeShape("dist");
-            viewer->addText("Distance: " + to_string(distDriven) + " m", 200, 200, 32, 1.0, 1.0, 1.0, "dist", 0);
-
-            if (maxError > 1.2 || distDriven >= 170.0) {
-                viewer->removeShape("eval");
-                if (maxError > 1.2) {
-                    viewer->addText("Try Again", 200, 50, 32, 1.0, 0.0, 0.0, "eval", 0);
-                } else {
-                    viewer->addText("Passed!", 200, 50, 32, 0.0, 1.0, 0.0, "eval", 0);
-                }
-            }
-
-            pclCloud.points.clear();
-        }
     }
-    return 0;
 }
