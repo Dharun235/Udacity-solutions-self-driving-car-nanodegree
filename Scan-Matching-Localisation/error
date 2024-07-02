@@ -1,7 +1,45 @@
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:834:3: error: static assertion failed: YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY
-  834 |   EIGEN_CHECK_BINARY_COMPATIBILIY(Func,typename ActualDstTypeCleaned::Scalar,typename Src::Scalar);
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-make[2]: *** [CMakeFiles/cloud_loc.dir/build.make:63: CMakeFiles/cloud_loc.dir/c3-main.cpp.o] Error 1
+In file included from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/tuple.hpp:28,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/policies/relate/tupled.hpp:15,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/strategies/intersection_strategies.hpp:22,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/strategies/strategies.hpp:39,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/geometry.hpp:49,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry.hpp:17,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/geom/Rtree.h:11,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/road/Map.h:10,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/carla/client/Map.h:13,
+                 from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/c3-main.cpp:4:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp: In instantiation of ‘boost::tuples::cons<HT, TT>::cons(typename boost::tuples::access_traits<typename boost::tuples::detail::wrap_non_storeable_type<HT>::type>::parameter_type, const tail_type&) [with HT = boost::geometry::de9im::mask; TT = boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>; typename boost::tuples::access_traits<typename boost::tuples::detail::wrap_non_storeable_type<HT>::type>::parameter_type = const boost::geometry::de9im::mask&; boost::tuples::cons<HT, TT>::tail_type = boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>]’:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/geometry/algorithms/detail/relate/de9im.hpp:200:66:   required from here
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp:294:23: warning: implicitly-declared ‘constexpr boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>::cons(const boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>&)’ is deprecated [-Wdeprecated-copy]
+  294 |     : head (h), tail(t) {}
+      |                       ^
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/include/system/boost/tuple/detail/tuple_basic.hpp:400:9: note: because ‘boost::tuples::cons<boost::geometry::de9im::mask, boost::tuples::null_type>’ has user-provided ‘boost::tuples::cons<HT, boost::tuples::null_type>& boost::tuples::cons<HT, boost::tuples::null_type>::operator=(const boost::tuples::cons<HT, boost::tuples::null_type>&) [with HT = boost::geometry::de9im::mask]’
+  400 |   cons& operator=(const cons& u) { head = u.head; return *this; }
+      |         ^~~~~~~~
+[ 66%] Building CXX object CMakeFiles/cloud_loc.dir/helper.cpp.o
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:42:8: error: ambiguating new declaration of ‘double getDistance(Point, Point)’
+   42 | double getDistance(Point p1, Point p2) {
+      |        ^~~~~~~~~~~
+In file included from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:1:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.h:111:7: note: old declaration ‘float getDistance(Point, Point)’
+  111 | float getDistance(Point p1, Point p2);
+      |       ^~~~~~~~~~~
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:46:8: error: ambiguating new declaration of ‘double minDistance(Point, std::vector<Point>)’
+   46 | double minDistance(Point p1, std::vector<Point> points) {
+      |        ^~~~~~~~~~~
+In file included from /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:1:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.h:112:7: note: old declaration ‘float minDistance(Point, std::vector<Point>)’
+  112 | float minDistance(Point p1, vector<Point> points);
+      |       ^~~~~~~~~~~
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp: In function ‘double minDistance(Point, std::vector<Point>)’:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:49:35: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<Point>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+   49 |         for (int index = 1; index < points.size(); index++) {
+      |                             ~~~~~~^~~~~~~~~~~~~~~
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp: In function ‘void renderPath(pcl::visualization::PCLVisualizer::Ptr&, const Ptr&, std::string, Color)’:
+/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/helper.cpp:89:42: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+   89 |     for (int index = previous + 1; index < cloud->points.size(); index++) {
+      |                                    ~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [CMakeFiles/cloud_loc.dir/build.make:76: CMakeFiles/cloud_loc.dir/helper.cpp.o] Error 1
 make[1]: *** [CMakeFiles/Makefile2:76: CMakeFiles/cloud_loc.dir/all] Error 2
 make: *** [Makefile:84: all] Error 2
 
