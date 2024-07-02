@@ -46,7 +46,7 @@ double getDistance(Point p1, Point p2) {
 double minDistance(Point p1, std::vector<Point> points) {
     if (points.size() > 0) {
         double dist = getDistance(p1, points[0]);
-        for (int index = 1; index < points.size(); index++) {
+        for (size_t index = 1; index < points.size(); index++) {
             double newDist = getDistance(p1, points[index]);
             if (newDist < dist)
                 dist = newDist;
@@ -86,7 +86,7 @@ void renderRay(pcl::visualization::PCLVisualizer::Ptr& viewer, Point p1, Point p
 
 void renderPath(pcl::visualization::PCLVisualizer::Ptr& viewer, const PointCloudT::Ptr& cloud, std::string name, Color color) {
     int previous = 0;
-    for (int index = previous + 1; index < cloud->points.size(); index++) {
+    for (size_t index = previous + 1; index < cloud->points.size(); index++) {
         renderRay(viewer, Point(cloud->points[previous].x, cloud->points[previous].y, 0), Point(cloud->points[index].x, cloud->points[index].y, 0), name + std::to_string(previous), color);
         previous++;
     }
