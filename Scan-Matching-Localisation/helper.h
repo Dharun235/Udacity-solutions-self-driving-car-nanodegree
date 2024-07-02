@@ -109,7 +109,7 @@ Eigen::Matrix4f transform2D(float theta, float xt, float yt);
 Eigen::Matrix4f transform3D(float yaw, float pitch, float roll, float xt, float yt, float zt);
 Pose getPose(Eigen::Matrix4f matrix);
 float getDistance(Point p1, Point p2);
-float minDistance(Point p1, vector<Point> points);
+float minDistance(Point p1, std::vector<Point> points);
 void print4x4Matrix (const Eigen::Matrix4f & matrix);
 void renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::string name, Color color, int renderSize = 4);
 void renderRay(pcl::visualization::PCLVisualizer::Ptr& viewer, Point p1, Point p2, std::string name, Color color);
