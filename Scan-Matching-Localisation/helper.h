@@ -55,6 +55,17 @@ struct Pose{
         Pose result(Point(position.x-p.position.x, position.y-p.position.y, position.z-p.position.z), Rotate(rotation.yaw-p.rotation.yaw, rotation.pitch-p.rotation.pitch, rotation.roll-p.rotation.roll) );
         return result;
     }
+
+	Eigen::Matrix4f getTransformationMatrix() const {
+        Eigen::Matrix4f transformation_matrix = Eigen::Matrix4f::Identity();
+        Eigen::Translation3f translation(position.x, position.y, position.z);
+        Eigen::AngleAxisf rotation_yaw(rotation.yaw, Eigen::Vector3f::UnitZ());
+        Eigen::AngleAxisf rotation_pitch(rotation.pitch, Eigen::Vector3f::UnitY());
+        Eigen::AngleAxisf rotation_roll(rotation.roll, Eigen::Vector3f::UnitX());
+
+        transformation_matrix = (translation * rotation_yaw * rotation_pitch * rotation_roll).matrix();
+        return transformation_matrix;
+    }
 };
 
 struct ControlState{
