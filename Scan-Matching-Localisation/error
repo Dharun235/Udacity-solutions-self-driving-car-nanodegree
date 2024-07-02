@@ -73,6 +73,16 @@ but not all the files it references.
 -- Generating done
 -- Build files have been written to: /home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project
 
+make
+ubuntu@ip-172-31-3-4:~/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project$ make
+[ 33%] Linking CXX executable cloud_loc
+/usr/bin/ld:/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/lib/libboost_filesystem.a: file format not recognized; treating as linker script
+/usr/bin/ld:/home/ubuntu/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project/libcarla-install/lib/libboost_filesystem.a:1: syntax error
+collect2: error: ld returned 1 exit status
+make[2]: *** [CMakeFiles/cloud_loc.dir/build.make:201: cloud_loc] Error 1
+make[1]: *** [CMakeFiles/Makefile2:76: CMakeFiles/cloud_loc.dir/all] Error 2
+make: *** [Makefile:84: all] Error 2
+
 ./run_carla.sh
 ubuntu@ip-172-31-3-4:~/nd0013_cd2693_Exercise_Starter_Code/Lesson_7_Project_Scan_Matching_Localization/c3-project$ ./run_carla.sh
 chmod: changing permissions of '/opt/carla-simulator/CarlaUE4/Binaries/Linux/CarlaUE4-Linux-Shipping': Operation not permitted
