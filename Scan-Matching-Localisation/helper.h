@@ -12,12 +12,12 @@ using namespace std;
 const double pi = M_PI;
 
 struct Point{
-	double x, y, z;
+	float x, y, z;
 
 	Point()
 		: x(0), y(0), z(0){}
 
-	Point(double setX, double setY, double setZ)
+	Point(float setX, float setY, float setZ)
 		: x(setX), y(setY), z(setZ){}
 
 	void Print(){
@@ -26,12 +26,12 @@ struct Point{
 };
 
 struct Rotate{
-	double yaw, pitch, roll;
+	float yaw, pitch, roll;
 
 	Rotate()
 		: yaw(0), pitch(0), roll(0){}
 
-	Rotate(double setYaw, double setPitch, double setRoll)
+	Rotate(float setYaw, float setPitch, float setRoll)
 		: yaw(setYaw), pitch(setPitch), roll(setRoll){}
 
 	void Print(){
@@ -80,21 +80,20 @@ struct ControlState{
 
 struct Vect2{
 
-	double mag;
-	double theta;
+	float mag;
+	float theta;
 
-	Vect2(double setMag, double setTheta)
+	Vect2(float setMag, float setTheta)
 		: mag(setMag), theta(setTheta) {}
 };
 
 struct Color
 {
+    float r, g, b;
 
-        float r, g, b;
-
-        Color(float setR, float setG, float setB)
-                : r(setR), g(setG), b(setB)
-        {}
+    Color(float setR, float setG, float setB)
+            : r(setR), g(setG), b(setB)
+    {}
 };
 
 struct BoxQ
@@ -106,13 +105,12 @@ struct BoxQ
     float cube_height;
 };
 
-Eigen::Matrix4d transform2D(double theta, double xt, double yt);
-Eigen::Matrix4d transform3D(double yaw, double pitch, double roll, double xt, double yt, double zt);
-Pose getPose(Eigen::Matrix4d matrix);
-double getDistance(Point p1, Point p2);
-double minDistance(Point p1, vector<Point> points);
-void print4x4Matrix (const Eigen::Matrix4d & matrix);
-void print4x4Matrixf (const Eigen::Matrix4f & matrix);
+Eigen::Matrix4f transform2D(float theta, float xt, float yt);
+Eigen::Matrix4f transform3D(float yaw, float pitch, float roll, float xt, float yt, float zt);
+Pose getPose(Eigen::Matrix4f matrix);
+float getDistance(Point p1, Point p2);
+float minDistance(Point p1, vector<Point> points);
+void print4x4Matrix (const Eigen::Matrix4f & matrix);
 void renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::string name, Color color, int renderSize = 4);
 void renderRay(pcl::visualization::PCLVisualizer::Ptr& viewer, Point p1, Point p2, std::string name, Color color);
 void renderPath(pcl::visualization::PCLVisualizer::Ptr& viewer, const PointCloudT::Ptr& cloud, std::string name, Color color);
@@ -121,16 +119,16 @@ void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, BoxQ box, int id,
 
 struct LineSegment{
 	// slope of y component
-	double my;
+	float my;
 	// slope of x component
-	double mx;
+	float mx;
 	//  (y{mx=1}/x{mx=0}) intercept
-	double b;
+	float b;
 	// (x{mx=1}/y{mx=0}) interval
-	double min;
-	double max;
+	float min;
+	float max;
 
-	LineSegment(float setMy, double setMx, double setB, double setMin, double setMax)
+	LineSegment(float setMy, float setMx, float setB, float setMin, float setMax)
                 : my(setMy), mx(setMx), b(setB), min(setMin), max(setMax){
                 if (setMy == 0 and setMx == 0){
                 	my = 0;
@@ -144,7 +142,7 @@ struct LineSegment{
     //		p2		  p3
    	// 		o---------o
 
-    bool Contains(double p1, double p2, double p3){
+    bool Contains(float p1, float p2, float p3){
     	return  (p2 <= p1 ) && (p1 <= p3) ;
     }
 
@@ -180,21 +178,21 @@ struct LineSegment{
 
 struct Lidar{
 
-	double x;
-	double y;
-	double theta;
-	double range;
+	float x;
+	float y;
+	float theta;
+	float range;
 	int res;
 
-	Lidar(double setX, double setY, double setTheta, double setRange, int setRes)
+	Lidar(float setX, float setY, float setTheta, float setRange, int setRes)
 		: x(setX), y(setY), theta(setTheta), range(setRange), res(setRes){}
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr scan(vector<LineSegment> walls){
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new PointCloudT); 
-		double deltaTheta = (2*pi)/double(res);
-		double residue = .1*deltaTheta;
-		for(double angle = theta; angle < theta + 2*pi - residue ; angle += deltaTheta ){
+		float deltaTheta = (2*pi)/float(res);
+		float residue = .1*deltaTheta;
+		for(float angle = theta; angle < theta + 2*pi - residue ; angle += deltaTheta ){
 
 			LineSegment ray;
 
@@ -205,26 +203,26 @@ struct Lidar{
 
 				//cout << "vertical" << endl;
 
-				double yb = sin(angle) * range;
-				double minb = min(y,yb);
-				double maxb = max(y,yb);
+				float yb = sin(angle) * range;
+				float minb = min(y,yb);
+				float maxb = max(y,yb);
 
 				ray = LineSegment(1, 0, x, minb, maxb);
 
 			}
 			else{
 
-				double m = ceil(tan(angle)*1000)/1000;
-				double b = y - x*m;
+				float m = ceil(tan(angle)*1000)/1000;
+				float b = y - x*m;
 
-				double xb = cos(angle) * range;
-				double minb = min(x,xb);
-				double maxb = max(x,xb);
+				float xb = cos(angle) * range;
+				float minb = min(x,xb);
+				float maxb = max(x,xb);
 
 				ray = LineSegment(m, 1, b, minb, maxb);
 			}
 
-			double closetDist = range;
+			float closetDist = range;
 			Point cPoint;
 			for(LineSegment wall : walls){
 				Point point;
@@ -232,7 +230,7 @@ struct Lidar{
 					//cout << "collision" << endl;
 					//ray.Print();
 					//wall.Print();
-					double distance = sqrt( (x - point.x)*(x - point.x) + (y - point.y)*(y - point.y) );
+					float distance = sqrt( (x - point.x)*(x - point.x) + (y - point.y)*(y - point.y) );
 					//cout << "dis " << distance << endl;
 					//point.Print();
 					if( distance < closetDist){
@@ -246,17 +244,18 @@ struct Lidar{
 				// transform to lidars local coordinates
 				//cout << "angle " << angle << endl;
 				//cout << closetDist << endl;
-				double pointX = closetDist * cos(angle-theta);
-				double pointY = closetDist * sin(angle-theta);
+				float pointX = closetDist * cos(angle-theta);
+				float pointY = closetDist * sin(angle-theta);
 				cloud->points.push_back(pcl::PointXYZ(pointX, pointY, 0));
 			}
 		}
 		return cloud;
 	}
 
-	void Move(double step, double rotate){
+	void Move(float step, float rotate){
 		theta += rotate;
 		x += step * cos(theta);
 		y += step * sin(theta);
 	}
 };
+
